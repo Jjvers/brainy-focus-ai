@@ -232,15 +232,17 @@ const Dashboard = () => {
                   />
                   <canvas
                     ref={canvasRef}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className={`absolute inset-0 w-full h-full object-cover ${!isSessionActive ? 'opacity-0' : 'opacity-100'}`}
                     width={640}
                     height={480}
                   />
+                  {!isSessionActive && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-primary/20 to-secondary/20 backdrop-blur-sm">
                       <Brain className="w-16 h-16 text-primary mb-4 animate-pulse" />
                       <p className="text-foreground text-lg font-medium">Click "Start Session" to begin</p>
                       <p className="text-muted-foreground text-sm mt-2">Make sure your camera is ready!</p>
                     </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

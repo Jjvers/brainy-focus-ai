@@ -1,0 +1,302 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { TrendingUp, Calendar, Clock, Eye, Award, Activity } from "lucide-react";
+import Navbar from "@/components/Navbar";
+
+const Analytics = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [weeklyData, setWeeklyData] = useState<any[]>([]);
+  const [monthlyStats, setMonthlyStats] = useState({
+    totalSessions: 0,
+    totalMinutes: 0,
+    avgScore: 0,
+    bestDay: "",
+    streak: 0,
+  });
+
+  useEffect(() => {
+    checkAuth();
+    loadAnalytics();
+  }, []);
+
+  const checkAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      navigate("/auth");
+    }
+  };
+
+  const loadAnalytics = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    // Get sessions from last 7 days
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const { data: sessions } = await supabase
+      .from("sessions")
+      .select("*")
+      .eq("user_id", user.id)
+      .gte("mulai", sevenDaysAgo.toISOString())
+      .order("mulai", { ascending: true });
+
+    if (sessions) {
+      // Process weekly data
+      const dayData: { [key: string]: { sessions: number; minutes: number; avgScore: number } } = {};
+      const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      
+      sessions.forEach((session) => {
+        const date = new Date(session.mulai);
+        const dayName = days[date.getDay()];
+        
+        if (!dayData[dayName]) {
+          dayData[dayName] = { sessions: 0, minutes: 0, avgScore: 0 };
+        }
+        
+        dayData[dayName].sessions += 1;
+        dayData[dayName].minutes += Math.floor((session.durasi_efektif || 0) / 60);
+        dayData[dayName].avgScore += session.skor_rata || 0;
+      });
+
+      const weeklyChartData = days.map((day) => ({
+        day,
+        sessions: dayData[day]?.sessions || 0,
+        minutes: dayData[day]?.minutes || 0,
+        score: dayData[day] ? Math.round(dayData[day].avgScore / dayData[day].sessions) : 0,
+      }));
+
+      setWeeklyData(weeklyChartData);
+
+      // Calculate monthly stats
+      const totalSessions = sessions.length;
+      const totalMinutes = sessions.reduce((sum, s) => sum + Math.floor((s.durasi_efektif || 0) / 60), 0);
+      const avgScore = totalSessions > 0
+        ? Math.round(sessions.reduce((sum, s) => sum + (s.skor_rata || 0), 0) / totalSessions)
+        : 0;
+      
+      const bestDayData = Object.entries(dayData).sort(([, a], [, b]) => b.minutes - a.minutes)[0];
+      const bestDay = bestDayData ? bestDayData[0] : "N/A";
+
+      // Calculate streak (consecutive days with sessions)
+      let streak = 0;
+      const today = new Date();
+      for (let i = 0; i < 30; i++) {
+        const checkDate = new Date(today);
+        checkDate.setDate(checkDate.getDate() - i);
+        const hasSession = sessions.some((s) => {
+          const sessionDate = new Date(s.mulai);
+          return sessionDate.toDateString() === checkDate.toDateString();
+        });
+        if (hasSession) {
+          streak++;
+        } else if (i > 0) {
+          break;
+        }
+      }
+
+      setMonthlyStats({
+        totalSessions,
+        totalMinutes,
+        avgScore,
+        bestDay,
+        streak,
+      });
+    }
+
+    setLoading(false);
+  };
+
+  return (
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gradient-hero p-4 md:p-8">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold flex items-center gap-2">
+              <Activity className="w-8 h-8 text-primary" />
+              Weekly Analytics
+            </h1>
+            <p className="text-muted-foreground">Track your progress and patterns</p>
+          </div>
+
+          {/* Key Metrics */}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <Card className="shadow-card">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-primary" />
+                  <CardTitle className="text-sm">Sessions</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{monthlyStats.totalSessions}</p>
+                <p className="text-xs text-muted-foreground">Last 7 days</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-card">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-secondary" />
+                  <CardTitle className="text-sm">Total Time</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{monthlyStats.totalMinutes}m</p>
+                <p className="text-xs text-muted-foreground">Focus time</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-card">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-success" />
+                  <CardTitle className="text-sm">Avg Score</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-success">{monthlyStats.avgScore}</p>
+                <p className="text-xs text-muted-foreground">Focus quality</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-card">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4 text-accent" />
+                  <CardTitle className="text-sm">Best Day</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-accent">{monthlyStats.bestDay}</p>
+                <p className="text-xs text-muted-foreground">Most productive</p>
+              </CardContent>
+            </Card>
+
+            <Card className="shadow-card bg-gradient-primary text-white border-0">
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-2">
+                  <Award className="w-4 h-4 text-white" />
+                  <CardTitle className="text-sm text-white">Streak</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-white">{monthlyStats.streak} 🔥</p>
+                <p className="text-xs text-white/80">Days in a row</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Weekly Session Chart */}
+          <Card className="shadow-glow">
+            <CardHeader>
+              <CardTitle>Weekly Session Distribution</CardTitle>
+              <CardDescription>Number of study sessions per day</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={weeklyData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="sessions" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Weekly Minutes Chart */}
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle>Weekly Focus Time</CardTitle>
+              <CardDescription>Total minutes spent studying each day</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={weeklyData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="minutes"
+                    stroke="hsl(var(--secondary))"
+                    strokeWidth={3}
+                    dot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Weekly Score Chart */}
+          <Card className="shadow-card">
+            <CardHeader>
+              <CardTitle>Weekly Focus Quality</CardTitle>
+              <CardDescription>Average focus score per day</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={weeklyData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" />
+                  <YAxis domain={[0, 100]} />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="score"
+                    stroke="hsl(var(--success))"
+                    strokeWidth={3}
+                    dot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Insights */}
+          <Card className="shadow-card bg-gradient-secondary text-white border-0">
+            <CardHeader>
+              <CardTitle className="text-white">📊 This Week's Insights</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 text-white/95">
+              {monthlyStats.streak >= 3 && (
+                <p className="flex items-start gap-2">
+                  <span>🔥</span>
+                  <span>Amazing! You're on a {monthlyStats.streak}-day streak! Keep the momentum going!</span>
+                </p>
+              )}
+              {monthlyStats.avgScore >= 80 && (
+                <p className="flex items-start gap-2">
+                  <span>⭐</span>
+                  <span>Your focus quality is excellent! Average score of {monthlyStats.avgScore}!</span>
+                </p>
+              )}
+              {monthlyStats.totalSessions >= 7 && (
+                <p className="flex items-start gap-2">
+                  <span>💪</span>
+                  <span>Consistency is key! You've completed {monthlyStats.totalSessions} sessions this week!</span>
+                </p>
+              )}
+              {monthlyStats.bestDay && (
+                <p className="flex items-start gap-2">
+                  <span>📅</span>
+                  <span>{monthlyStats.bestDay} is your most productive day. Schedule important tasks then!</span>
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default Analytics;
