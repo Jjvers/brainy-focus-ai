@@ -50,66 +50,79 @@ export const useFaceDetection = (
       if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
         const landmarks = results.multiFaceLandmarks[0];
         
-        // Key facial landmarks for better tracking
-        const leftEye = landmarks[33];
-        const rightEye = landmarks[263];
-        const noseTip = landmarks[1];
-        const chin = landmarks[152];
-        const foreheadCenter = landmarks[10];
+        // Eye landmarks for precise eyeball tracking
+        const leftEyeInner = landmarks[133];
+        const leftEyeOuter = landmarks[33];
+        const leftEyeTop = landmarks[159];
+        const leftEyeBottom = landmarks[145];
+        const leftPupil = landmarks[468]; // Left iris center
         
-        // Calculate face center and eye center
-        const faceCenter = {
-          x: (leftEye.x + rightEye.x + noseTip.x + chin.x) / 4,
-          y: (leftEye.y + rightEye.y + noseTip.y + chin.y) / 4,
+        const rightEyeInner = landmarks[362];
+        const rightEyeOuter = landmarks[263];
+        const rightEyeTop = landmarks[386];
+        const rightEyeBottom = landmarks[374];
+        const rightPupil = landmarks[473]; // Right iris center
+        
+        // Calculate eye centers (eye socket centers, not pupil)
+        const leftEyeCenter = {
+          x: (leftEyeInner.x + leftEyeOuter.x) / 2,
+          y: (leftEyeTop.y + leftEyeBottom.y) / 2,
         };
         
-        const eyeCenter = {
-          x: (leftEye.x + rightEye.x) / 2,
-          y: (leftEye.y + rightEye.y) / 2,
+        const rightEyeCenter = {
+          x: (rightEyeInner.x + rightEyeOuter.x) / 2,
+          y: (rightEyeTop.y + rightEyeBottom.y) / 2,
         };
-
-        // Calculate head pose angles
-        const gazeX = noseTip.x - eyeCenter.x;
-        const gazeY = noseTip.y - eyeCenter.y;
         
-        // Calculate face tilt (vertical alignment)
-        const faceHeight = Math.abs(foreheadCenter.y - chin.y);
-        const verticalAlignment = Math.abs(noseTip.x - faceCenter.x);
+        // Calculate pupil deviation from eye center (this is the actual gaze!)
+        const leftGazeX = leftPupil.x - leftEyeCenter.x;
+        const leftGazeY = leftPupil.y - leftEyeCenter.y;
         
-        // More precise thresholds for focus detection
-        const horizontalThreshold = 0.035; // Looking left/right
-        const verticalThreshold = 0.04;    // Looking up/down
-        const tiltThreshold = 0.05;         // Head tilt tolerance
-
+        const rightGazeX = rightPupil.x - rightEyeCenter.x;
+        const rightGazeY = rightPupil.y - rightEyeCenter.y;
+        
+        // Average both eyes for more stable gaze tracking
+        const avgGazeX = (leftGazeX + rightGazeX) / 2;
+        const avgGazeY = (leftGazeY + rightGazeY) / 2;
+        
+        // Calculate eye width for normalization
+        const leftEyeWidth = Math.abs(leftEyeOuter.x - leftEyeInner.x);
+        const rightEyeWidth = Math.abs(rightEyeOuter.x - rightEyeInner.x);
+        const avgEyeWidth = (leftEyeWidth + rightEyeWidth) / 2;
+        
+        // Normalize gaze by eye width (independent of face size/distance)
+        const normalizedGazeX = avgGazeX / avgEyeWidth;
+        const normalizedGazeY = avgGazeY / avgEyeWidth;
+        
+        // Eyeball tracking thresholds (much more sensitive than head tracking)
+        const horizontalThreshold = 0.15; // Eyeball looking left/right
+        const verticalThreshold = 0.15;   // Eyeball looking up/down
+        
         let direction = "center";
         let score = 100;
         
-        // Check horizontal gaze (left/right)
-        if (Math.abs(gazeX) > horizontalThreshold) {
-          direction = gazeX > 0 ? "right" : "left";
-          const deviation = Math.abs(gazeX) - horizontalThreshold;
-          score = Math.max(30, 100 - (deviation * 1500));
+        // Check horizontal eyeball gaze (left/right)
+        if (Math.abs(normalizedGazeX) > horizontalThreshold) {
+          direction = normalizedGazeX > 0 ? "right" : "left";
+          const deviation = Math.abs(normalizedGazeX) - horizontalThreshold;
+          score = Math.max(20, 100 - (deviation * 250));
         } 
-        // Check vertical gaze (up/down)
-        else if (Math.abs(gazeY) > verticalThreshold) {
-          direction = gazeY > 0 ? "down" : "up";
-          const deviation = Math.abs(gazeY) - verticalThreshold;
-          score = Math.max(30, 100 - (deviation * 1200));
+        // Check vertical eyeball gaze (up/down)
+        else if (Math.abs(normalizedGazeY) > verticalThreshold) {
+          direction = normalizedGazeY > 0 ? "down" : "up";
+          const deviation = Math.abs(normalizedGazeY) - verticalThreshold;
+          score = Math.max(20, 100 - (deviation * 200));
         }
-        // Check head tilt
-        else if (verticalAlignment > tiltThreshold) {
-          direction = "tilted";
-          score = Math.max(50, 100 - (verticalAlignment * 800));
-        }
-        // Face is properly aligned - give high focus score
+        // Eyes are centered - maximum focus
         else {
           direction = "center";
           score = 100;
         }
         
-        // Bonus points for face stability and proper positioning
-        if (faceHeight > 0.3 && faceHeight < 0.7) {
-          score = Math.min(100, score + 5); // Face is at good distance
+        // Additional stability bonus for consistent eye tracking
+        const gazeStability = 1 - (Math.abs(normalizedGazeX) + Math.abs(normalizedGazeY)) / 2;
+        if (gazeStability > 0.8) {
+          score = Math.min(100, score + 5);
         }
 
         setResult({
