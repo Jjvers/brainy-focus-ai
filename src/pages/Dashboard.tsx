@@ -472,7 +472,8 @@ const Dashboard = () => {
                         <Label htmlFor="existingMaterial">Select Existing Material</Label>
                         <Select value={selectedMaterialId} onValueChange={(value) => {
                           setSelectedMaterialId(value);
-                          if (value) {
+                          if (value === "new") {
+                            setSelectedMaterialId("");
                             setMaterialName("");
                           }
                         }}>
@@ -480,7 +481,7 @@ const Dashboard = () => {
                             <SelectValue placeholder="Choose from your materials..." />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="">None (create new)</SelectItem>
+                            <SelectItem value="new">None (create new)</SelectItem>
                             {existingMaterials.map((material) => (
                               <SelectItem key={material.id} value={material.id}>
                                 {material.name} ({material.category})
