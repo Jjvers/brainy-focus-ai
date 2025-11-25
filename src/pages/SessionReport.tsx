@@ -15,10 +15,11 @@ const SessionReport = () => {
   const [focusDetails, setFocusDetails] = useState<any[]>([]);
   const [distractions, setDistractions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [studyType, setStudyType] = useState("reading");
+  const [studyType, setStudyType] = useState("visual");
   const [materialClarity, setMaterialClarity] = useState("3");
   const [studyChallenge, setStudyChallenge] = useState("distractions");
   const [reflectionNotes, setReflectionNotes] = useState("");
+  const [showInsight, setShowInsight] = useState(false);
 
   useEffect(() => {
     loadSessionData();
@@ -392,14 +393,25 @@ const SessionReport = () => {
               />
             </div>
 
-            <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10 border border-primary/20">
-              <p className="text-xs text-muted-foreground mb-2 font-medium">
-                📊 Your Personalized Study Insight
-              </p>
-              <p className="text-sm leading-relaxed">
-                {getReflectionSummary()}
-              </p>
-            </div>
+            <Button 
+              onClick={() => setShowInsight(true)}
+              className="w-full shadow-glow"
+              size="lg"
+            >
+              Submit & Get Your Personalized Insight 🎯
+            </Button>
+
+            {showInsight && (
+              <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary/30 animate-bounce-in">
+                <p className="text-xs text-muted-foreground mb-2 font-medium flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  📊 Your Personalized Study Insight
+                </p>
+                <p className="text-sm leading-relaxed font-medium">
+                  {getReflectionSummary()}
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
