@@ -78,41 +78,41 @@ export const useFaceDetection = (
         const faceHeight = Math.abs(foreheadCenter.y - chin.y);
         const verticalAlignment = Math.abs(noseTip.x - faceCenter.x);
         
-        // Much more forgiving thresholds to reduce false positives
-        const horizontalThreshold = 0.15; // Looking left/right - very forgiving
-        const verticalThreshold = 0.12;    // Looking up/down - very forgiving
-        const tiltThreshold = 0.15;         // Head tilt tolerance - very forgiving
-        const phoneThreshold = 0.20;         // Looking down at phone - only extreme cases
+        // More forgiving thresholds for better accuracy
+        const horizontalThreshold = 0.055; // Looking left/right - more forgiving
+        const verticalThreshold = 0.065;    // Looking up/down - more forgiving
+        const tiltThreshold = 0.075;         // Head tilt tolerance - more forgiving
+        const phoneThreshold = 0.12;         // Looking down at phone
 
         let direction = "center";
         let score = 100;
         let distraction: string | null = null;
         
-        // Check for phone usage (looking down significantly) - only extreme cases
+        // Check for phone usage (looking down significantly)
         if (gazeY > phoneThreshold) {
           direction = "down";
           distraction = "looking_down_phone";
-          score = Math.max(30, 100 - ((gazeY - phoneThreshold) * 400));
+          score = Math.max(20, 100 - ((gazeY - phoneThreshold) * 800));
         }
-        // Check horizontal gaze (left/right) - only clear cases
+        // Check horizontal gaze (left/right)
         else if (Math.abs(gazeX) > horizontalThreshold) {
           direction = gazeX > 0 ? "right" : "left";
           distraction = gazeX > 0 ? "looking_away_right" : "looking_away_left";
           const deviation = Math.abs(gazeX) - horizontalThreshold;
-          score = Math.max(60, 100 - (deviation * 500));
+          score = Math.max(40, 100 - (deviation * 1000));
         } 
-        // Check vertical gaze (up/down) - only clear cases
+        // Check vertical gaze (up/down)
         else if (Math.abs(gazeY) > verticalThreshold) {
           direction = gazeY > 0 ? "down" : "up";
           distraction = gazeY > 0 ? "looking_down" : "looking_up";
           const deviation = Math.abs(gazeY) - verticalThreshold;
-          score = Math.max(60, 100 - (deviation * 500));
+          score = Math.max(40, 100 - (deviation * 900));
         }
-        // Check head tilt - only significant tilts
+        // Check head tilt
         else if (verticalAlignment > tiltThreshold) {
           direction = "tilted";
           distraction = "head_tilted";
-          score = Math.max(70, 100 - (verticalAlignment * 400));
+          score = Math.max(60, 100 - (verticalAlignment * 600));
         }
         // Face is properly aligned - give high focus score
         else {
