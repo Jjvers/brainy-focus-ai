@@ -64,9 +64,19 @@ const FaceLogin = ({ onSuccess, onCancel }: FaceLoginProps) => {
         .from("profiles")
         .select("id, nama")
         .eq("email", email.toLowerCase())
-        .single();
+        .maybeSingle();
 
-      if (profileError || !profile) {
+      if (profileError) {
+        console.error("Profile lookup error:", profileError);
+        toast({
+          title: "Error",
+          description: "Failed to look up account. Please try again.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (!profile) {
         toast({
           title: "User Not Found",
           description: "No account found with this email. Please sign up first.",
