@@ -7,12 +7,18 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Brain, Eye, TrendingUp } from "lucide-react";
+import { Brain, Eye, TrendingUp, Camera, User } from "lucide-react";
+import FaceLogin from "@/components/FaceLogin";
+import FaceRegistration from "@/components/FaceRegistration";
+
+type AuthMode = "email" | "face-login" | "face-register";
 
 const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [authMode, setAuthMode] = useState<AuthMode>("email");
+  const [pendingUser, setPendingUser] = useState<{ email: string; password: string; nama: string } | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -39,31 +45,84 @@ const Auth = () => {
     const password = formData.get("password") as string;
     const nama = formData.get("nama") as string;
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: {
-          nama,
-        },
-      },
-    });
+    // Store pending user data and switch to face registration
+    setPendingUser({ email, password, nama });
+    setAuthMode("face-register");
+    setLoading(false);
+  };
 
-    if (error) {
+  const handleFaceRegistrationComplete = async (descriptors: Float32Array[]) => {
+    if (!pendingUser) return;
+    
+    setLoading(true);
+    
+    try {
+      // First, create the user account
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email: pendingUser.email,
+        password: pendingUser.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+          data: {
+            nama: pendingUser.nama,
+          },
+        },
+      });
+
+      if (signUpError) {
+        toast({
+          title: "Error",
+          description: signUpError.message,
+          variant: "destructive",
+        });
+        setLoading(false);
+        return;
+      }
+
+      if (authData.user) {
+        // Save face descriptors to database
+        const descriptorRecords = descriptors.map((descriptor, index) => ({
+          user_id: authData.user!.id,
+          descriptor: Array.from(descriptor),
+          label: pendingUser.nama,
+        }));
+
+        const { error: descriptorError } = await supabase
+          .from("face_descriptors")
+          .insert(descriptorRecords);
+
+        if (descriptorError) {
+          console.error("Error saving face descriptors:", descriptorError);
+          toast({
+            title: "Warning",
+            description: "Account created but face data could not be saved. You can add it later.",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Success! 🎉",
+            description: "Account created with face login enabled!",
+          });
+        }
+      }
+
+      setPendingUser(null);
+      setAuthMode("email");
+    } catch (error) {
+      console.error("Registration error:", error);
       toast({
         title: "Error",
-        description: error.message,
+        description: "Registration failed. Please try again.",
         variant: "destructive",
       });
-    } else {
-      toast({
-        title: "Success!",
-        description: "Account created successfully. Please sign in.",
-      });
     }
-
+    
     setLoading(false);
+  };
+
+  const handleFaceRegistrationCancel = () => {
+    setPendingUser(null);
+    setAuthMode("email");
   };
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,6 +148,42 @@ const Auth = () => {
 
     setLoading(false);
   };
+
+  const handleFaceLoginSuccess = (email: string) => {
+    // Face was verified, now we need to navigate to dashboard
+    // Since Supabase requires proper auth, prompt for password
+    toast({
+      title: "Face Verified! 🎉",
+      description: "Please enter your password to complete login.",
+    });
+    setAuthMode("email");
+    // Pre-fill email in a future enhancement
+  };
+
+  // Face Login Mode
+  if (authMode === "face-login") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
+        <FaceLogin 
+          onSuccess={handleFaceLoginSuccess}
+          onCancel={() => setAuthMode("email")}
+        />
+      </div>
+    );
+  }
+
+  // Face Registration Mode
+  if (authMode === "face-register") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
+        <FaceRegistration
+          onComplete={handleFaceRegistrationComplete}
+          onCancel={handleFaceRegistrationCancel}
+          requiredCaptures={5}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
@@ -132,6 +227,18 @@ const Auth = () => {
                 </p>
               </div>
             </div>
+
+            <div className="flex items-start gap-3">
+              <div className="p-2 bg-accent/10 rounded-lg">
+                <Camera className="w-5 h-5 text-accent" />
+              </div>
+              <div>
+                <h3 className="font-semibold">Face Login</h3>
+                <p className="text-sm text-muted-foreground">
+                  Secure and fast authentication using facial recognition
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -143,7 +250,29 @@ const Auth = () => {
               Sign in or create an account to get started
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
+            {/* Face Login Button */}
+            <Button 
+              onClick={() => setAuthMode("face-login")}
+              variant="outline"
+              className="w-full gap-2 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
+              size="lg"
+            >
+              <Camera className="w-5 h-5 text-primary" />
+              Sign In with Face
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with email
+                </span>
+              </div>
+            </div>
+
             <Tabs defaultValue="login" className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Sign In</TabsTrigger>
@@ -211,9 +340,13 @@ const Auth = () => {
                       minLength={6}
                     />
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Loading..." : "Create Account"}
+                  <Button type="submit" className="w-full gap-2" disabled={loading}>
+                    <Camera className="w-4 h-4" />
+                    {loading ? "Loading..." : "Continue to Face Setup"}
                   </Button>
+                  <p className="text-xs text-center text-muted-foreground">
+                    You'll capture your face for secure face login
+                  </p>
                 </form>
               </TabsContent>
             </Tabs>
