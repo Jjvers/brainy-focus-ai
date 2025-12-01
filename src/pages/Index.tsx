@@ -16,7 +16,7 @@ const Index = () => {
             <span className="text-sm font-medium text-primary">AI-Powered Focus Analytics</span>
           </div>
           
-          <h1 className="text-5xl md:text-7xl font-bold bg-gradient-primary bg-clip-text text-transparent leading-tight">
+          <h1 className="text-5xl md:text-7xl font-bold text-foreground leading-tight">
             Train Your
             <br />
             Focus Muscle
@@ -38,7 +38,7 @@ const Index = () => {
           </div>
 
           <p className="text-sm text-muted-foreground">
-            ✨ New: Sign in securely with Face Recognition
+            New: Sign in securely with Face Recognition
           </p>
         </div>
       </div>
@@ -199,7 +199,7 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="container mx-auto px-4 py-8 text-center text-muted-foreground text-sm">
-        <p>© 2024 BrainyFocus AI. Built with ❤️ for students.</p>
+        <p>© 2024 BrainyFocus AI. Built for students.</p>
       </footer>
     </div>
   );
