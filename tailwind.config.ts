@@ -77,14 +77,14 @@ export default {
         'gradient-success': 'var(--gradient-success)',
         'gradient-accent': 'var(--gradient-accent)',
         'gradient-hero': 'var(--gradient-hero)',
-        'gradient-sky': 'var(--gradient-sky)',
-        'gradient-magic': 'var(--gradient-magic)',
+        'gradient-fun': 'var(--gradient-fun)',
+        'gradient-rainbow': 'var(--gradient-rainbow)',
       },
       boxShadow: {
         'soft': 'var(--shadow-soft)',
         'card': 'var(--shadow-card)',
         'glow': 'var(--shadow-glow)',
-        'magic': 'var(--shadow-magic)',
+        'colorful': 'var(--shadow-colorful)',
       },
       transitionProperty: {
         'smooth': 'var(--transition-smooth)',

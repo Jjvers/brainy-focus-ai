@@ -280,19 +280,19 @@ const SessionReport = () => {
               <div className="space-y-2">
                 {distractions.map((distraction, idx) => {
                   const getDistractionLabel = (type: string) => {
-                    const labels: Record<string, string> = {
-                      "looking_down_phone": "Using Phone / Looking Down",
-                      "looking_away_left": "Looking Away Left",
-                      "looking_away_right": "Looking Away Right",
-                      "looking_down": "Looking Down",
-                      "looking_up": "Looking Up",
-                      "head_tilted": "Head Tilted",
-                      "face_not_detected": "Face Not Visible",
+                    const labels: Record<string, { label: string; emoji: string }> = {
+                      "looking_down_phone": { label: "Using Phone / Looking Down", emoji: "📱" },
+                      "looking_away_left": { label: "Looking Away Left", emoji: "👈" },
+                      "looking_away_right": { label: "Looking Away Right", emoji: "👉" },
+                      "looking_down": { label: "Looking Down", emoji: "⬇️" },
+                      "looking_up": { label: "Looking Up", emoji: "⬆️" },
+                      "head_tilted": { label: "Head Tilted", emoji: "🔄" },
+                      "face_not_detected": { label: "Face Not Visible", emoji: "👤" },
                     };
-                    return labels[type] || type.replace("_", " ");
+                    return labels[type] || { label: type.replace("_", " "), emoji: "⚠️" };
                   };
                   
-                  const label = getDistractionLabel(distraction.jenis);
+                  const { label, emoji } = getDistractionLabel(distraction.jenis);
                   
                   return (
                     <div
@@ -302,7 +302,7 @@ const SessionReport = () => {
                     >
                       <div>
                         <p className="font-medium">
-                          {label}
+                          {emoji} {label}
                         </p>
                         <p className="text-sm text-muted-foreground">
                           {formatDate(distraction.waktu)}
@@ -320,7 +320,7 @@ const SessionReport = () => {
             ) : (
               <div className="text-center py-8">
                 <Eye className="w-12 h-12 mx-auto mb-2 text-success opacity-50" />
-                <p className="text-muted-foreground">Perfect focus! No distractions detected</p>
+                <p className="text-muted-foreground">Perfect focus! No distractions detected 🎯</p>
               </div>
             )}
           </CardContent>
@@ -348,13 +348,13 @@ const SessionReport = () => {
                 onChange={(e) => setStudyType(e.target.value)}
                 className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm transition-all hover:border-primary focus:border-primary focus:ring-2 focus:ring-primary/20"
               >
-                <option value="visual">Look at diagrams, charts, or videos (Visual Learner)</option>
-                <option value="auditori">Listen to lectures, podcasts, or discussions (Auditory Learner)</option>
-                <option value="kinestetik">Do hands-on activities, experiments, or practice (Kinesthetic Learner)</option>
-                <option value="readwrite">Read books, notes, or write summaries (Read/Write Learner)</option>
+                <option value="visual">Look at diagrams, charts, or videos (Visual Learner 👁️)</option>
+                <option value="auditori">Listen to lectures, podcasts, or discussions (Auditory Learner 👂)</option>
+                <option value="kinestetik">Do hands-on activities, experiments, or practice (Kinesthetic Learner ✋)</option>
+                <option value="readwrite">Read books, notes, or write summaries (Read/Write Learner 📝)</option>
               </select>
               <p className="text-xs text-muted-foreground">
-                Identifying your learning style helps you choose the most effective study methods
+                💡 Identifying your learning style helps you choose the most effective study methods
               </p>
             </div>
 
@@ -375,7 +375,7 @@ const SessionReport = () => {
                 <option value="5">5 - Very clear and confident</option>
               </select>
               <p className="text-xs text-muted-foreground">
-                If still unclear after studying, try a different explanation source or ask for help
+                💡 If still unclear after studying, try a different explanation source or ask for help
               </p>
             </div>
 
@@ -396,7 +396,7 @@ const SessionReport = () => {
                 <option value="none">No major challenge</option>
               </select>
               <p className="text-xs text-muted-foreground">
-                Identifying obstacles helps you plan better for next time
+                💡 Identifying obstacles helps you plan better for next time
               </p>
             </div>
 
@@ -415,14 +415,14 @@ const SessionReport = () => {
               className="w-full shadow-glow"
               size="lg"
             >
-              Submit & Get Your Personalized Insight
+              Submit & Get Your Personalized Insight 🎯
             </Button>
 
             {showInsight && (
               <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-accent/10 border-2 border-primary/30 animate-bounce-in">
                 <p className="text-xs text-muted-foreground mb-2 font-medium flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-primary" />
-                  Your Personalized Study Insight
+                  📊 Your Personalized Study Insight
                 </p>
                 <p className="text-sm leading-relaxed font-medium">
                   {getReflectionSummary()}
@@ -443,32 +443,38 @@ const SessionReport = () => {
             <CardContent className="space-y-3 text-white/95">
               {session.skor_rata >= 80 && (
                 <p className="flex items-start gap-2 animate-fade-in">
-                  <span>Excellent focus! You were locked in. Keep this same environment and routine</span>
+                  <span>🔥</span>
+                  <span>Excellent focus! You were locked in. Keep this same environment and routine!</span>
                 </p>
               )}
               {session.skor_rata >= 60 && session.skor_rata < 80 && (
                 <p className="flex items-start gap-2 animate-fade-in">
-                  <span>Good session! Try reducing distractions next time to boost your score even higher</span>
+                  <span>💪</span>
+                  <span>Good session! Try reducing distractions next time to boost your score even higher.</span>
                 </p>
               )}
               {session.skor_rata < 60 && (
                 <p className="flex items-start gap-2 animate-fade-in">
-                  <span>Focus was inconsistent. Turn off phone notifications and find a quieter space</span>
+                  <span>💡</span>
+                  <span>Focus was inconsistent. Turn off phone notifications and find a quieter space!</span>
                 </p>
               )}
               {distractions.length > 10 && (
                 <p className="flex items-start gap-2 animate-fade-in" style={{ animationDelay: "100ms" }}>
-                  <span>You had {distractions.length} distractions! Put your phone in another room and close unneeded tabs</span>
+                  <span>⚠️</span>
+                  <span>You had {distractions.length} distractions! Put your phone in another room and close unneeded tabs.</span>
                 </p>
               )}
               {session.durasi_efektif > 3600 && (
                 <p className="flex items-start gap-2 animate-fade-in" style={{ animationDelay: "200ms" }}>
-                  <span>Amazing endurance - {Math.floor(session.durasi_efektif / 3600)}+ hours! Remember to take 15-min breaks every hour</span>
+                  <span>⏰</span>
+                  <span>Amazing endurance - {Math.floor(session.durasi_efektif / 3600)}+ hours! Remember to take 15-min breaks every hour.</span>
                 </p>
               )}
               {session.durasi_efektif < 900 && (
                 <p className="flex items-start gap-2 animate-fade-in" style={{ animationDelay: "300ms" }}>
-                  <span>Short session. Try aiming for at least 25 minutes (1 Pomodoro) for better results</span>
+                  <span>🎯</span>
+                  <span>Short session. Try aiming for at least 25 minutes (1 Pomodoro) for better results!</span>
                 </p>
               )}
             </CardContent>

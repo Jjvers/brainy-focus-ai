@@ -11,7 +11,6 @@ import { useFaceDetection } from "@/hooks/useFaceDetection";
 import { Play, Square, Brain, Eye, Activity, AlertTriangle, BookOpen } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import Navbar from "@/components/Navbar";
-import FloatingEmojis from "@/components/FloatingEmojis";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -182,7 +181,7 @@ const Dashboard = () => {
       setDistractionCount(0);
 
       toast({
-        title: "Session Started",
+        title: "Session Started! 🚀",
         description: `Studying ${selectedMaterial.name}`,
       });
     } else {
@@ -222,7 +221,7 @@ const Dashboard = () => {
       setDistractionCount(0);
 
       toast({
-        title: "Session Started",
+        title: "Session Started! 🚀",
         description: "Your study session has begun",
       });
     }
@@ -278,21 +277,20 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
-      <FloatingEmojis />
-      <div className="min-h-screen bg-gradient-sky p-4 md:p-8 relative">
-        <div className="max-w-7xl mx-auto space-y-6 relative z-10">
+      <div className="min-h-screen bg-gradient-hero p-4 md:p-8">
+        <div className="max-w-7xl mx-auto space-y-6">
           {/* Welcome Header */}
           <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">
-              Welcome, {user?.user_metadata?.nama?.split(" ")[0] || "Friend"}
-            </h1>
-            <p className="text-muted-foreground">
-              {isSessionActive 
-                ? "Session active - stay focused" 
-                : "Ready to start your study session"}
-            </p>
-          </div>
+            <div>
+              <h1 className="text-3xl font-bold">
+                Hey, {user?.user_metadata?.nama?.split(" ")[0] || "Friend"} 👋
+              </h1>
+              <p className="text-muted-foreground">
+                {isSessionActive 
+                  ? "Stay locked in! You're crushing it 🔥" 
+                  : "Ready to level up today? Let's go!"}
+              </p>
+            </div>
           </div>
 
           {/* Main Content */}
@@ -394,7 +392,7 @@ const Dashboard = () => {
                   <CardContent>
                     <p className="text-5xl font-bold tabular-nums">{formatTime(elapsedTime)}</p>
                     <p className="text-white/80 text-sm mt-2">
-                      {elapsedTime >= 1500 ? "Consider taking a break" : "Stay focused"}
+                      {elapsedTime >= 1500 ? "Nice! Time for a quick break 😊" : "Keep pushing!"}
                     </p>
                   </CardContent>
                 </Card>
@@ -435,7 +433,7 @@ const Dashboard = () => {
                       <div className="p-3 bg-muted/50 rounded-lg">
                         <p className="text-xs text-muted-foreground mb-1">Face Status</p>
                         <p className={`font-medium text-sm ${faceDetection.isFaceDetected ? "text-success" : "text-destructive"}`}>
-                          {faceDetection.isFaceDetected ? "Detected" : "Not Found"}
+                          {faceDetection.isFaceDetected ? "✓ Detected" : "✗ Not Found"}
                         </p>
                       </div>
 

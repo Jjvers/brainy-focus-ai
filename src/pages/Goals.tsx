@@ -212,9 +212,9 @@ const Goals = () => {
                         </div>
                         <Progress value={progress} className="h-3" />
                         {isComplete && (
-                           <p className="text-sm text-success flex items-center gap-1">
+                          <p className="text-sm text-success flex items-center gap-1">
                             <Award className="w-4 h-4" />
-                            Goal achieved! Great job
+                            Goal achieved! Great job! 🎉
                           </p>
                         )}
                       </div>
@@ -228,20 +228,24 @@ const Goals = () => {
           {/* Motivational Tips */}
           <Card className="shadow-card bg-gradient-primary text-white border-0">
             <CardHeader>
-              <CardTitle className="text-white">Goal Setting Tips</CardTitle>
+              <CardTitle className="text-white">💡 Goal Setting Tips</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-white/95">
               <p className="flex items-start gap-2">
+                <span>🎯</span>
                 <span>Start small - 25 minutes daily is better than unrealistic targets</span>
               </p>
               <p className="flex items-start gap-2">
+                <span>📈</span>
                 <span>Gradually increase your goals as you build the habit</span>
               </p>
               <p className="flex items-start gap-2">
+                <span>⏰</span>
                 <span>Study at the same time daily to build consistency</span>
               </p>
               <p className="flex items-start gap-2">
-                <span>Celebrate small wins - every session counts</span>
+                <span>🏆</span>
+                <span>Celebrate small wins - every session counts!</span>
               </p>
             </CardContent>
           </Card>

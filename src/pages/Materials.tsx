@@ -121,7 +121,7 @@ const Materials = () => {
       }
 
       toast({
-        title: "Success",
+        title: "Success! 🎉",
         description: "Material updated successfully",
       });
     } else {
@@ -145,7 +145,7 @@ const Materials = () => {
       }
 
       toast({
-        title: "Success",
+        title: "Success! 🎉",
         description: "Material added successfully",
       });
     }
@@ -221,8 +221,8 @@ const Materials = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-4xl font-bold text-foreground animate-bounce-in">
-                Study Materials
+              <h1 className="text-4xl font-bold bg-gradient-fun bg-clip-text text-transparent animate-bounce-in">
+                Study Materials 📚
               </h1>
               <p className="text-muted-foreground mt-2">
                 Track all your study materials and progress in one place
@@ -325,7 +325,7 @@ const Materials = () => {
             <Card className="text-center py-16 animate-scale-in">
               <CardContent>
                 <BookOpen className="w-16 h-16 mx-auto text-muted-foreground mb-4 animate-float" />
-                <h3 className="text-xl font-semibold mb-2">No materials yet</h3>
+                <h3 className="text-xl font-semibold mb-2">No materials yet! 📖</h3>
                 <p className="text-muted-foreground mb-6">
                   Start by adding your first study material
                 </p>
@@ -422,7 +422,7 @@ const Materials = () => {
                     {material.progress_percentage >= 100 && (
                       <div className="flex items-center justify-center gap-2 bg-gradient-success text-white p-2 rounded-lg animate-bounce-in">
                         <Award className="w-4 h-4" />
-                        <span className="text-sm font-semibold">Completed</span>
+                        <span className="text-sm font-semibold">Completed! 🎉</span>
                       </div>
                     )}
                   </CardContent>
@@ -435,31 +435,31 @@ const Materials = () => {
           <Card className="border-2 border-primary/20 shadow-card animate-slide-up">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-primary" />
-                Material Tracking Tips
+                <BookOpen className="w-5 h-5 text-primary animate-wiggle" />
+                Material Tracking Tips 💡
               </CardTitle>
             </CardHeader>
             <CardContent className="grid md:grid-cols-2 gap-4 text-sm">
               <div className="space-y-2">
-                <p className="font-semibold text-primary">Track Everything</p>
+                <p className="font-semibold text-primary">📊 Track Everything</p>
                 <p className="text-muted-foreground">
                   Add all your study materials to get a complete overview of your learning journey
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="font-semibold text-accent">Set Realistic Goals</p>
+                <p className="font-semibold text-accent">🎯 Set Realistic Goals</p>
                 <p className="text-muted-foreground">
                   Set achievable target hours for each material based on your schedule
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="font-semibold text-secondary">Add Notes</p>
+                <p className="font-semibold text-secondary">📝 Add Notes</p>
                 <p className="text-muted-foreground">
                   Use the notes section to track key topics, deadlines, or study strategies
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="font-semibold text-warning">Stay Consistent</p>
+                <p className="font-semibold text-warning">🔥 Stay Consistent</p>
                 <p className="text-muted-foreground">
                   Study sessions for each material are automatically tracked during your sessions
                 </p>

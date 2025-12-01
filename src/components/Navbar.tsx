@@ -1,8 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, History, User, LogOut, TrendingUp, Target, BookOpen, Sparkles } from "lucide-react";
+import { Brain, LayoutDashboard, History, User, LogOut, TrendingUp, Target, BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import logoImage from "@/assets/logo.png";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -15,34 +14,34 @@ const Navbar = () => {
 
   const navItems = [
     { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { path: "/materials", icon: BookOpen, label: "Materi" },
-    { path: "/history", icon: History, label: "Riwayat" },
-    { path: "/analytics", icon: TrendingUp, label: "Analitik" },
-    { path: "/goals", icon: Target, label: "Target" },
-    { path: "/profile", icon: User, label: "Profil" },
+    { path: "/materials", icon: BookOpen, label: "Materials" },
+    { path: "/history", icon: History, label: "History" },
+    { path: "/analytics", icon: TrendingUp, label: "Analytics" },
+    { path: "/goals", icon: Target, label: "Goals" },
+    { path: "/profile", icon: User, label: "Profile" },
   ];
 
   return (
-    <nav className="border-b-2 border-primary/20 bg-card/95 backdrop-blur-md sticky top-0 z-[100] shadow-soft">
+    <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
       <div className="container mx-auto px-4">
-        <div className="flex h-20 items-center justify-between">
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/dashboard")}>
-            <img src={logoImage} alt="StudyBuddy" className="w-12 h-12 drop-shadow-glow" />
-            <span className="text-2xl font-black text-foreground tracking-tight">
-              Study<span className="bg-gradient-primary bg-clip-text text-transparent">Buddy</span>
-            </span>
+        <div className="flex h-16 items-center justify-between">
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate("/dashboard")}>
+            <div className="p-2 bg-gradient-primary rounded-lg">
+              <Brain className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold text-lg">FocusTrack</span>
           </div>
 
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
               return (
                 <Button
                   key={item.path}
-                  variant={isActive ? "default" : "ghost"}
+                  variant={isActive ? "secondary" : "ghost"}
                   onClick={() => navigate(item.path)}
-                  className={`gap-2 font-bold ${isActive ? 'shadow-glow' : ''}`}
+                  className="gap-2"
                 >
                   <Icon className="w-4 h-4" />
                   {item.label}
@@ -51,9 +50,8 @@ const Navbar = () => {
             })}
           </div>
 
-          <Button variant="outline" className="gap-2 border-2 border-destructive/30 hover:bg-destructive/10" onClick={handleLogout}>
+          <Button variant="outline" size="icon" onClick={handleLogout}>
             <LogOut className="w-4 h-4" />
-            <span className="hidden sm:inline font-bold">Keluar</span>
           </Button>
         </div>
 
@@ -65,10 +63,10 @@ const Navbar = () => {
             return (
               <Button
                 key={item.path}
-                variant={isActive ? "default" : "ghost"}
+                variant={isActive ? "secondary" : "ghost"}
                 size="sm"
                 onClick={() => navigate(item.path)}
-                className={`gap-2 whitespace-nowrap font-bold ${isActive ? 'shadow-glow' : ''}`}
+                className="gap-2 whitespace-nowrap"
               >
                 <Icon className="w-4 h-4" />
                 {item.label}
