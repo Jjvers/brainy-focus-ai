@@ -129,24 +129,19 @@ const Profile = () => {
             </CardHeader>
             <CardContent className="space-y-3 text-white/95">
               <p className="flex items-start gap-2">
-                <span>📵</span>
                 <span>Turn off phone notifications or use focus/DND mode</span>
               </p>
               <p className="flex items-start gap-2">
-                <span>🎧</span>
                 <span>Try lo-fi, classical, or white noise for better concentration</span>
               </p>
               <p className="flex items-start gap-2">
-                <span>⏰</span>
-                <span>Use Pomodoro: 25 min focus, 5 min break. Repeat!</span>
+                <span>Use Pomodoro: 25 min focus, 5 min break. Repeat</span>
               </p>
               <p className="flex items-start gap-2">
-                <span>🌿</span>
-                <span>Find a bright, cool, quiet spot. Window seats work great!</span>
+                <span>Find a bright, cool, quiet spot. Window seats work great</span>
               </p>
               <p className="flex items-start gap-2">
-                <span>💧</span>
-                <span>Stay hydrated and snack healthy. Your brain needs fuel!</span>
+                <span>Stay hydrated and snack healthy. Your brain needs fuel</span>
               </p>
             </CardContent>
           </Card>

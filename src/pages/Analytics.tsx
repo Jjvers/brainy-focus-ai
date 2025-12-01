@@ -221,7 +221,7 @@ const Analytics = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-3xl font-bold text-white">{monthlyStats.streak} 🔥</p>
+                <p className="text-3xl font-bold text-white">{monthlyStats.streak}</p>
                 <p className="text-xs text-white/80">Days in a row</p>
                 <p className="text-xs text-white/90 mt-1">Consecutive study days</p>
               </CardContent>
@@ -367,31 +367,27 @@ const Analytics = () => {
           {/* Insights */}
           <Card className="shadow-card bg-gradient-secondary text-white border-0">
             <CardHeader>
-              <CardTitle className="text-white">📊 This Week&apos;s Insights</CardTitle>
+              <CardTitle className="text-white">This Week's Insights</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3 text-white/95">
               {monthlyStats.streak >= 3 && (
                 <p className="flex items-start gap-2 animate-fade-in">
-                  <span>🔥</span>
-                  <span>Amazing! You&apos;re on a {monthlyStats.streak}-day streak! Consistency builds lasting study habits. Keep it up!</span>
+                  <span>Amazing! You're on a {monthlyStats.streak}-day streak! Consistency builds lasting study habits. Keep it up</span>
                 </p>
               )}
               {monthlyStats.avgScore >= 80 && (
                 <p className="flex items-start gap-2 animate-fade-in" style={{ animationDelay: "100ms" }}>
-                  <span>⭐</span>
-                  <span>Your focus quality is excellent! Average score of {monthlyStats.avgScore} shows you&apos;re studying in the right environment.</span>
+                  <span>Your focus quality is excellent! Average score of {monthlyStats.avgScore} shows you're studying in the right environment</span>
                 </p>
               )}
               {monthlyStats.totalSessions >= 7 && (
                 <p className="flex items-start gap-2 animate-fade-in" style={{ animationDelay: "200ms" }}>
-                  <span>💪</span>
-                  <span>Consistency is key! You&apos;ve completed {monthlyStats.totalSessions} sessions this week. Daily practice leads to mastery!</span>
+                  <span>Consistency is key! You've completed {monthlyStats.totalSessions} sessions this week. Daily practice leads to mastery</span>
                 </p>
               )}
               {monthlyStats.bestDay && (
                 <p className="flex items-start gap-2 animate-fade-in" style={{ animationDelay: "300ms" }}>
-                  <span>📅</span>
-                  <span>{monthlyStats.bestDay} is your most productive day. Try scheduling your most important study tasks for {monthlyStats.bestDay}s!</span>
+                  <span>{monthlyStats.bestDay} is your most productive day. Try scheduling your most important study tasks for {monthlyStats.bestDay}s</span>
                 </p>
               )}
             </CardContent>
