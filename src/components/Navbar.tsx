@@ -23,7 +23,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="border-b-2 border-primary/20 bg-card/90 backdrop-blur-md sticky top-0 z-50 shadow-soft">
+    <nav className="border-b-2 border-primary/20 bg-card/95 backdrop-blur-md sticky top-0 z-[100] shadow-soft">
       <div className="container mx-auto px-4">
         <div className="flex h-20 items-center justify-between">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate("/dashboard")}>
