@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Brain, Eye, TrendingUp, Camera, User } from "lucide-react";
+import { Eye, TrendingUp, Camera } from "lucide-react";
 import FaceLogin from "@/components/FaceLogin";
 import FaceRegistration from "@/components/FaceRegistration";
 
@@ -45,7 +45,6 @@ const Auth = () => {
     const password = formData.get("password") as string;
     const nama = formData.get("nama") as string;
 
-    // Store pending user data and switch to face registration
     setPendingUser({ email, password, nama });
     setAuthMode("face-register");
     setLoading(false);
@@ -57,7 +56,6 @@ const Auth = () => {
     setLoading(true);
     
     try {
-      // First, create the user account
       const { data: authData, error: signUpError } = await supabase.auth.signUp({
         email: pendingUser.email,
         password: pendingUser.password,
@@ -80,7 +78,6 @@ const Auth = () => {
       }
 
       if (authData.user) {
-        // Save face descriptors to database
         const descriptorRecords = descriptors.map((descriptor, index) => ({
           user_id: authData.user!.id,
           descriptor: Array.from(descriptor),
@@ -153,7 +150,6 @@ const Auth = () => {
     setLoading(true);
     
     try {
-      // Call edge function to get magic link
       const { data, error } = await supabase.functions.invoke("face-auth", {
         body: { email, user_id: userId },
       });
@@ -170,13 +166,11 @@ const Auth = () => {
         return;
       }
 
-      // Show success message before redirect
       toast({
-        title: "Face Verified!",
+        title: "Face Verified",
         description: "Logging you in...",
       });
 
-      // Redirect to the magic link - Supabase handles auth and redirects back
       window.location.href = data.action_link;
     } catch (err) {
       console.error("Face login error:", err);
@@ -190,10 +184,9 @@ const Auth = () => {
     }
   };
 
-  // Face Login Mode
   if (authMode === "face-login") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/30 to-accent/20 p-4">
         <FaceLogin 
           onSuccess={handleFaceLoginSuccess}
           onCancel={() => setAuthMode("email")}
@@ -202,10 +195,9 @@ const Auth = () => {
     );
   }
 
-  // Face Registration Mode
   if (authMode === "face-register") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/30 to-accent/20 p-4">
         <FaceRegistration
           onComplete={handleFaceRegistrationComplete}
           onCancel={handleFaceRegistrationCancel}
@@ -216,56 +208,55 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-hero p-4">
-      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-8 items-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-muted/30 to-accent/20 p-4">
+      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-12 items-center">
         {/* Left side - Branding */}
-        <div className="hidden md:block space-y-6">
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
-              <Brain className="w-5 h-5 text-primary" />
-              <span className="text-sm font-medium text-primary">AI-Powered Focus Analytics</span>
+        <div className="hidden md:block space-y-8">
+          <div className="space-y-6">
+            <div className="inline-flex items-center gap-3 px-5 py-2 bg-accent/50 rounded-full border border-accent">
+              <span className="text-sm font-medium text-accent-foreground">Intelligent Focus Analytics</span>
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-foreground">
+            <h1 className="text-5xl font-bold text-foreground leading-tight">
               Master Your Focus
             </h1>
-            <p className="text-lg text-muted-foreground">
-              Real-time AI monitoring to help you study smarter, not harder
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              Real-time monitoring to help you study with greater awareness and intention.
             </p>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-primary/10 rounded-lg">
-                <Eye className="w-5 h-5 text-primary" />
+          <div className="space-y-5">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-primary/10 rounded-xl">
+                <Eye className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-semibold">Live Detection</h3>
-                <p className="text-sm text-muted-foreground">
-                  Track your focus in real-time with advanced face & gaze detection
+                <h3 className="font-semibold text-foreground mb-1">Live Detection</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Track your focus in real-time with advanced face and gaze detection.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-secondary/10 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-secondary" />
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-accent/20 rounded-xl">
+                <TrendingUp className="w-6 h-6 text-accent-foreground" />
               </div>
               <div>
-                <h3 className="font-semibold">Smart Insights</h3>
-                <p className="text-sm text-muted-foreground">
-                  Get personalized recommendations to boost your productivity
+                <h3 className="font-semibold text-foreground mb-1">Smart Insights</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Receive personalized recommendations to enhance your productivity.
                 </p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3">
-              <div className="p-2 bg-accent/10 rounded-lg">
-                <Camera className="w-5 h-5 text-accent" />
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-secondary/20 rounded-xl">
+                <Camera className="w-6 h-6 text-secondary-foreground" />
               </div>
               <div>
-                <h3 className="font-semibold">Face Login</h3>
-                <p className="text-sm text-muted-foreground">
-                  Secure and fast authentication using facial recognition
+                <h3 className="font-semibold text-foreground mb-1">Face Authentication</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Secure and effortless sign-in using facial recognition.
                 </p>
               </div>
             </div>
@@ -273,20 +264,18 @@ const Auth = () => {
         </div>
 
         {/* Right side - Auth Form */}
-        <Card className="shadow-glow">
-          <CardHeader>
-            <CardTitle>Welcome Back</CardTitle>
-            <CardDescription>
-              Sign in or create an account to get started
+        <Card className="shadow-elegant border-border/50 bg-card/90 backdrop-blur-sm">
+          <CardHeader className="space-y-3 text-center pt-8">
+            <CardTitle className="text-3xl font-bold">Welcome</CardTitle>
+            <CardDescription className="text-base text-muted-foreground">
+              Enter your learning sanctuary
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Face Login Button */}
+          <CardContent className="space-y-6">
             <Button 
               onClick={() => setAuthMode("face-login")}
               variant="outline"
-              className="w-full gap-2 border-2 border-primary/30 hover:border-primary hover:bg-primary/5"
-              size="lg"
+              className="w-full gap-3 border-2 border-primary/30 hover:border-primary hover:bg-primary/5 h-12"
             >
               <Camera className="w-5 h-5 text-primary" />
               Sign In with Face
@@ -294,10 +283,10 @@ const Auth = () => {
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
+                <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
+                <span className="bg-card px-3 text-muted-foreground">
                   Or continue with email
                 </span>
               </div>
@@ -331,7 +320,7 @@ const Auth = () => {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button type="submit" className="w-full h-11" disabled={loading}>
                     {loading ? "Loading..." : "Sign In"}
                   </Button>
                 </form>
@@ -370,12 +359,12 @@ const Auth = () => {
                       minLength={6}
                     />
                   </div>
-                  <Button type="submit" className="w-full gap-2" disabled={loading}>
+                  <Button type="submit" className="w-full gap-2 h-11" disabled={loading}>
                     <Camera className="w-4 h-4" />
                     {loading ? "Loading..." : "Continue to Face Setup"}
                   </Button>
                   <p className="text-xs text-center text-muted-foreground">
-                    You'll capture your face for secure face login
+                    You'll capture your face for secure authentication
                   </p>
                 </form>
               </TabsContent>
