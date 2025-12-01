@@ -11,6 +11,7 @@ import { useFaceDetection } from "@/hooks/useFaceDetection";
 import { Play, Square, Brain, Eye, Activity, AlertTriangle, BookOpen } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import Navbar from "@/components/Navbar";
+import FloatingEmojis from "@/components/FloatingEmojis";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -277,8 +278,9 @@ const Dashboard = () => {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gradient-hero p-4 md:p-8">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <FloatingEmojis />
+      <div className="min-h-screen bg-gradient-sky p-4 md:p-8 relative">
+        <div className="max-w-7xl mx-auto space-y-6 relative z-10">
           {/* Welcome Header */}
           <div className="flex items-center justify-between">
           <div>

@@ -13,6 +13,7 @@ import FaceRegistration from "@/components/FaceRegistration";
 import logoImage from "@/assets/logo.png";
 import cloudsImage from "@/assets/clouds-decoration.png";
 import starsImage from "@/assets/stars-pattern.png";
+import FloatingEmojis from "@/components/FloatingEmojis";
 
 type AuthMode = "email" | "face-login" | "face-register";
 
@@ -190,14 +191,17 @@ const Auth = () => {
   if (authMode === "face-login") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-sky p-4 relative overflow-hidden">
+        <FloatingEmojis />
         <div 
-          className="absolute inset-0 opacity-20 pointer-events-none"
+          className="absolute inset-0 opacity-20 pointer-events-none z-0"
           style={{ backgroundImage: `url(${starsImage})`, backgroundSize: '600px', backgroundRepeat: 'repeat' }}
         />
-        <FaceLogin 
-          onSuccess={handleFaceLoginSuccess}
-          onCancel={() => setAuthMode("email")}
-        />
+        <div className="relative z-10">
+          <FaceLogin 
+            onSuccess={handleFaceLoginSuccess}
+            onCancel={() => setAuthMode("email")}
+          />
+        </div>
       </div>
     );
   }
@@ -205,27 +209,31 @@ const Auth = () => {
   if (authMode === "face-register") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-sky p-4 relative overflow-hidden">
+        <FloatingEmojis />
         <div 
-          className="absolute inset-0 opacity-20 pointer-events-none"
+          className="absolute inset-0 opacity-20 pointer-events-none z-0"
           style={{ backgroundImage: `url(${starsImage})`, backgroundSize: '600px', backgroundRepeat: 'repeat' }}
         />
-        <FaceRegistration
-          onComplete={handleFaceRegistrationComplete}
-          onCancel={handleFaceRegistrationCancel}
-          requiredCaptures={5}
-        />
+        <div className="relative z-10">
+          <FaceRegistration
+            onComplete={handleFaceRegistrationComplete}
+            onCancel={handleFaceRegistrationCancel}
+            requiredCaptures={5}
+          />
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-sky p-4 relative overflow-hidden">
+      <FloatingEmojis />
       <div 
-        className="absolute inset-0 opacity-30 pointer-events-none"
+        className="absolute inset-0 opacity-30 pointer-events-none z-0"
         style={{ backgroundImage: `url(${cloudsImage})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
       />
       <div 
-        className="absolute inset-0 opacity-20 pointer-events-none animate-pulse-glow"
+        className="absolute inset-0 opacity-20 pointer-events-none animate-pulse-glow z-0"
         style={{ backgroundImage: `url(${starsImage})`, backgroundSize: '600px', backgroundRepeat: 'repeat' }}
       />
 
